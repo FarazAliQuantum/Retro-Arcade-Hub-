@@ -1,0 +1,434 @@
+# Gaming Website Front Page with Mini-Games
+
+I'll create a gaming website front page with a video loop background, and include three mini-games: Tic-Tac-Toe, Mario, and Dinosaur game.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Arcade Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        body {
+            font-family: 'Press Start 2P', cursive;
+            overflow-x: hidden;
+        }
+        
+        .game-container {
+            transition: all 0.3s ease;
+        }
+        
+        .game-container:hover {
+            transform: translateY(-5px);
+        }
+        
+        #video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        .pixel-border {
+            border: 4px solid #333;
+            box-shadow: 8px 8px 0px #000;
+        }
+        
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+        }
+        
+        .cell {
+            width: 80px;
+            height: 80px;
+            background-color: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+        
+        .mario-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            background-color: #6b8cff;
+            overflow: hidden;
+        }
+        
+        .mario {
+            position: absolute;
+            bottom: 0;
+            left: 50px;
+            width: 40px;
+            height: 60px;
+            background-color: #e52521;
+        }
+        
+        .mario::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 0;
+            width: 40px;
+            height: 20px;
+            background-color: #e52521;
+            border-radius: 50% 50% 0 0;
+        }
+        
+        .pipe {
+            position: absolute;
+            bottom: 0;
+            width: 40px;
+            height: 60px;
+            background-color: #1a7a1a;
+        }
+        
+        .dino-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            background-color: #f7f7f7;
+            overflow: hidden;
+        }
+        
+        .dino {
+            position: absolute;
+            bottom: 0;
+            left: 50px;
+            width: 40px;
+            height: 60px;
+            background-color: #666;
+        }
+        
+        .cactus {
+            position: absolute;
+            bottom: 0;
+            width: 20px;
+            height: 40px;
+            background-color: #1a7a1a;
+        }
+        
+        .ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 10px;
+            background-color: #555;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- Video Background -->
+    <video id="video-background" autoplay muted loop>
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-game-show-lights-1715-large.mp4" type="video/mp4">
+    </video>
+
+    <!-- Header -->
+    <header class="container mx-auto px-4 py-8">
+        <div class="flex flex-col items-center">
+            <h1 class="text-4xl md:text-6xl text-center mb-4 text-yellow-400">RETRO ARCADE HUB</h1>
+            <p class="text-lg text-center mb-8">Play classic games right in your browser!</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Featured Games Section -->
+        <section class="mb-16">
+            <h2 class="text-2xl md:text-3xl text-center mb-8 text-green-400">FEATURED GAMES</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Tic Tac Toe -->
+                <div class="game-container bg-gray-800 rounded-lg p-6 pixel-border">
+                    <h3 class="text-xl text-center mb-4 text-blue-400">TIC TAC TOE</h3>
+                    <div class="game-board mx-auto mb-4">
+                        <div class="cell" data-cell-index="0"></div>
+                        <div class="cell" data-cell-index="1"></div>
+                        <div class="cell" data-cell-index="2"></div>
+                        <div class="cell" data-cell-index="3"></div>
+                        <div class="cell" data-cell-index="4"></div>
+                        <div class="cell" data-cell-index="5"></div>
+                        <div class="cell" data-cell-index="6"></div>
+                        <div class="cell" data-cell-index="7"></div>
+                        <div class="cell" data-cell-index="8"></div>
+                    </div>
+                    <div class="text-center mb-4">
+                        <div id="game-status" class="mb-2">Player X's turn</div>
+                        <button id="reset-button" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Reset Game</button>
+                    </div>
+                </div>
+
+                <!-- Mario Game -->
+                <div class="game-container bg-gray-800 rounded-lg p-6 pixel-border">
+                    <h3 class="text-xl text-center mb-4 text-red-400">MARIO JUMP</h3>
+                    <div class="mario-container mb-4">
+                        <div class="mario" id="mario"></div>
+                        <div class="pipe" id="pipe" style="left: 300px;"></div>
+                        <div class="ground"></div>
+                    </div>
+                    <div class="text-center">
+                        <p class="mb-2">Press SPACE to jump!</p>
+                        <button id="start-mario" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">Start Game</button>
+                    </div>
+                </div>
+
+                <!-- Dinosaur Game -->
+                <div class="game-container bg-gray-800 rounded-lg p-6 pixel-border">
+                    <h3 class="text-xl text-center mb-4 text-purple-400">DINO RUN</h3>
+                    <div class="dino-container mb-4">
+                        <div class="dino" id="dino"></div>
+                        <div class="cactus" id="cactus" style="left: 300px;"></div>
+                        <div class="ground"></div>
+                    </div>
+                    <div class="text-center">
+                        <p class="mb-2">Press UP ARROW to jump!</p>
+                        <button id="start-dino" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">Start Game</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="mb-16">
+            <div class="bg-gray-800 rounded-lg p-8 pixel-border">
+                <h2 class="text-2xl text-center mb-6 text-yellow-400">ABOUT RETRO ARCADE</h2>
+                <p class="mb-4 text-center">Welcome to Retro Arcade Hub, your one-stop destination for classic browser games! We bring back the nostalgia of the golden age of gaming with simple yet addictive games you can play anytime, anywhere.</p>
+                <p class="text-center">No downloads required - just click and play!</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 py-8">
+        <div class="container mx-auto px-4">
+            <p class="text-center">© 2023 Retro Arcade Hub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Tic Tac Toe Game Logic
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tic Tac Toe
+            const cells = document.querySelectorAll('.cell');
+            const statusDisplay = document.getElementById('game-status');
+            const resetButton = document.getElementById('reset-button');
+            
+            let gameActive = true;
+            let currentPlayer = "X";
+            let gameState = ["", "", "", "", "", "", "", "", ""];
+            
+            const winningConditions = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6]
+            ];
+            
+            function handleCellClick(clickedCellEvent) {
+                const clickedCell = clickedCellEvent.target;
+                const clickedCellIndex = parseInt(clickedCell.getAttribute('data-cell-index'));
+                
+                if (gameState[clickedCellIndex] !== "" || !gameActive) {
+                    return;
+                }
+                
+                gameState[clickedCellIndex] = currentPlayer;
+                clickedCell.textContent = currentPlayer;
+                
+                checkResult();
+            }
+            
+            function checkResult() {
+                let roundWon = false;
+                
+                for (let i = 0; i < winningConditions.length; i++) {
+                    const [a, b, c] = winningConditions[i];
+                    if (gameState[a] === "" || gameState[b] === "" || gameState[c] === "") {
+                        continue;
+                    }
+                    if (gameState[a] === gameState[b] && gameState[b] === gameState[c]) {
+                        roundWon = true;
+                        break;
+                    }
+                }
+                
+                if (roundWon) {
+                    statusDisplay.textContent = `Player ${currentPlayer} wins!`;
+                    gameActive = false;
+                    return;
+                }
+                
+                let roundDraw = !gameState.includes("");
+                if (roundDraw) {
+                    statusDisplay.textContent = "Game ended in a draw!";
+                    gameActive = false;
+                    return;
+                }
+                
+                currentPlayer = currentPlayer === "X" ? "O" : "X";
+                statusDisplay.textContent = `Player ${currentPlayer}'s turn`;
+            }
+            
+            function resetGame() {
+                gameActive = true;
+                currentPlayer = "X";
+                gameState = ["", "", "", "", "", "", "", "", ""];
+                statusDisplay.textContent = `Player ${currentPlayer}'s turn`;
+                cells.forEach(cell => {
+                    cell.textContent = "";
+                });
+            }
+            
+            cells.forEach(cell => cell.addEventListener('click', handleCellClick));
+            resetButton.addEventListener('click', resetGame);
+            
+            // Mario Game
+            const mario = document.getElementById('mario');
+            const pipe = document.getElementById('pipe');
+            const startMarioButton = document.getElementById('start-mario');
+            
+            let marioGameActive = false;
+            let marioJumping = false;
+            
+            function jump() {
+                if (!marioJumping && marioGameActive) {
+                    marioJumping = true;
+                    mario.style.bottom = '100px';
+                    
+                    setTimeout(() => {
+                        mario.style.bottom = '0';
+                        marioJumping = false;
+                    }, 500);
+                }
+            }
+            
+            function startMarioGame() {
+                marioGameActive = true;
+                pipe.style.animation = 'pipeMove 2s infinite linear';
+                
+                // Check for collision
+                const checkCollision = setInterval(() => {
+                    if (!marioGameActive) {
+                        clearInterval(checkCollision);
+                        return;
+                    }
+                    
+                    const pipeLeft = parseInt(window.getComputedStyle(pipe).getPropertyValue('left'));
+                    const marioBottom = parseInt(window.getComputedStyle(mario).getPropertyValue('bottom'));
+                    
+                    if (pipeLeft < 90 && pipeLeft > 50 && marioBottom < 60) {
+                        marioGameActive = false;
+                        pipe.style.animation = 'none';
+                        alert('Game Over! Mario hit the pipe.');
+                    }
+                }, 10);
+            }
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Space') {
+                    jump();
+                }
+            });
+            
+            startMarioButton.addEventListener('click', startMarioGame);
+            
+            // Dinosaur Game
+            const dino = document.getElementById('dino');
+            const cactus = document.getElementById('cactus');
+            const startDinoButton = document.getElementById('start-dino');
+            
+            let dinoGameActive = false;
+            let dinoJumping = false;
+            
+            function dinoJump() {
+                if (!dinoJumping && dinoGameActive) {
+                    dinoJumping = true;
+                    dino.style.bottom = '100px';
+                    
+                    setTimeout(() => {
+                        dino.style.bottom = '0';
+                        dinoJumping = false;
+                    }, 500);
+                }
+            }
+            
+            function startDinoGame() {
+                dinoGameActive = true;
+                cactus.style.animation = 'pipeMove 1.5s infinite linear';
+                
+                // Check for collision
+                const checkCollision = setInterval(() => {
+                    if (!dinoGameActive) {
+                        clearInterval(checkCollision);
+                        return;
+                    }
+                    
+                    const cactusLeft = parseInt(window.getComputedStyle(cactus).getPropertyValue('left'));
+                    const dinoBottom = parseInt(window.getComputedStyle(dino).getPropertyValue('bottom'));
+                    
+                    if (cactusLeft < 90 && cactusLeft > 50 && dinoBottom < 40) {
+                        dinoGameActive = false;
+                        cactus.style.animation = 'none';
+                        alert('Game Over! Dino hit the cactus.');
+                    }
+                }, 10);
+            }
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'ArrowUp') {
+                    dinoJump();
+                }
+            });
+            
+            startDinoButton.addEventListener('click', startDinoGame);
+            
+            // Add CSS animations
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes pipeMove {
+                    0% { left: 300px; }
+                    100% { left: -40px; }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>
+```
+
+## Features of this Gaming Website:
+
+1. **Responsive Design** - Uses Tailwind CSS for a mobile-friendly layout
+2. **Video Background** - Looping video background with game show lights
+3. **Three Mini-Games**:
+   - **Tic-Tac-Toe** - Fully playable with win detection
+   - **Mario Game** - Jump over pipes using the spacebar
+   - **Dinosaur Game** - Jump over cacti using the up arrow
+
+4. **Retro Styling**:
+   - Pixel-style borders and buttons
+   - "Press Start 2P" font for authentic arcade feel
+   - Color-coded game sections
+
+5. **Interactive Elements**:
+   - Game controls and instructions
+   - Start buttons for the action games
+   - Reset functionality for Tic-Tac-Toe
+
+The games are simplified versions but fully functional. You can expand them further by adding scoring, difficulty levels, or more complex gameplay mechanics.
